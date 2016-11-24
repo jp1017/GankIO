@@ -28,8 +28,8 @@ import rx.schedulers.Schedulers;
  * A simple {@link Fragment} subclass.
  */
 public class ContentFragment extends Fragment {
-    private int mPage;
-    public static final String ARG_PAGE = "ARG_PAGE";
+    private String type;
+    public static final String ARG_TYPE = "ARG_TYPE";
 
 
     public ContentFragment() {
@@ -37,10 +37,10 @@ public class ContentFragment extends Fragment {
     }
 
 
-    public static ContentFragment newInstance(int page) {
+    public static ContentFragment newInstance(String type) {
 
         Bundle args = new Bundle();
-        args.putInt(ARG_PAGE, page);
+        args.putString(ARG_TYPE, type);
 
         ContentFragment fragment = new ContentFragment();
         fragment.setArguments(args);
@@ -51,7 +51,7 @@ public class ContentFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPage = getArguments().getInt(ARG_PAGE);
+        type = getArguments().getString(ARG_TYPE);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ContentFragment extends Fragment {
 
 
         GankService gankService = GankServiceHelper.getGankService();
-        gankService.getDatas("Android", "10", "1")
+        gankService.getDatas(type, "10", "1")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<Datas>() {
