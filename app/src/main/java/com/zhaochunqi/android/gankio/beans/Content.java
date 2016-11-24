@@ -10,7 +10,7 @@ import java.util.List;
  * Created by developer on 24/11/2016.
  */
 
-public class Result {
+public class Content {
     @SerializedName("_id")
     @Expose
     public String id;
@@ -37,7 +37,7 @@ public class Result {
     public Boolean used;
     @SerializedName("who")
     @Expose
-    public Object who;
+    public String who;
     @SerializedName("images")
     @Expose
     public List<String> images = new ArrayList<String>();

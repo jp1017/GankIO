@@ -16,6 +16,6 @@ public class Datas {
     public Boolean error;
     @SerializedName("results")
     @Expose
-    public List<Result> results = new ArrayList<Result>();
+    public List<Content> mContents = new ArrayList<Content>();
 
 }

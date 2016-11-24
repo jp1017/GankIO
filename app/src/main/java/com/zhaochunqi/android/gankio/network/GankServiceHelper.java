@@ -18,6 +18,7 @@ public class GankServiceHelper {
         }
 
         Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(GankService.URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
