@@ -1,4 +1,4 @@
-package com.zhaochunqi.android.gankio;
+package com.zhaochunqi.android.gankio.network;
 
 
 import com.zhaochunqi.android.gankio.beans.Datas;
