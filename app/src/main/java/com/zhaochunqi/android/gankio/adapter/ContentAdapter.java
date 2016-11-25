@@ -2,11 +2,11 @@ package com.zhaochunqi.android.gankio.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -53,20 +53,20 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView mImageDisplay;
         private final TextView mTvTitle;
         private final TextView mTvAuthor;
         private final TextView mTvPubDate;
         private final RelativeLayout mRelativeLayout;
+        private final ViewPager mVpImage;
 
         public ImageViewHolder(View itemView) {
             super(itemView);
 
-            mImageDisplay = (ImageView) itemView.findViewById(R.id.image_display);
             mTvTitle = (TextView) itemView.findViewById(R.id.tv_title);
             mTvAuthor = ((TextView) itemView.findViewById(R.id.tv_author));
             mTvPubDate = ((TextView) itemView.findViewById(R.id.tv_pub_date));
             mRelativeLayout = ((RelativeLayout) itemView.findViewById(R.id.holder));
+            mVpImage = (ViewPager) itemView.findViewById(R.id.vp_image);
         }
     }
 
@@ -82,7 +82,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         if (viewType == ITEM_TYPE.VIEW_TYPE_IMAGE.ordinal()) {
-            View imageContentView = inflater.inflate(R.layout.item_pager_image, parent, false);
+            View imageContentView = inflater.inflate(R.layout.item_image, parent, false);
             viewHolder = new ImageViewHolder(imageContentView);
         }
 
@@ -114,7 +114,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (holder instanceof ImageViewHolder) {
             ImageViewHolder imageViewHolder = ((ImageViewHolder) holder);
-            ImageView imageDisplay = imageViewHolder.mImageDisplay;
+            ViewPager vpImage = imageViewHolder.mVpImage;
             RelativeLayout relativeLayout = imageViewHolder.mRelativeLayout;
             TextView tvAuthor = imageViewHolder.mTvAuthor;
             TextView tvPubDate = imageViewHolder.mTvPubDate;
@@ -123,6 +123,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tvTitle.setText(content.desc);
             tvAuthor.setText(content.who);
             tvPubDate.setText(content.publishedAt);
+
+            ImageViewPagerAdapter pagerAdapter = new ImageViewPagerAdapter(mContext);
+            pagerAdapter.setResources(content.images);
+            vpImage.setAdapter(pagerAdapter);
 
             relativeLayout.setOnClickListener((listener) -> {
                 Intent intent = new Intent(mContext, WebViewActivity.class);
