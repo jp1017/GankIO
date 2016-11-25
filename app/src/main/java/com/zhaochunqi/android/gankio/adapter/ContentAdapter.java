@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.zhaochunqi.android.gankio.R;
@@ -32,7 +33,8 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public static enum ITEM_TYPE {
         VIEW_TYPE_IMAGE,
-        VIEW_TYPE_TEXT
+        VIEW_TYPE_TEXT,
+        VIEW_TYPE_LOAD_MORE
     }
 
     public ContentAdapter(List<Content> contents) {
@@ -78,6 +80,19 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    static class LoadMoreViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView mTextView;
+        private final LinearLayout mLinearLayout;
+
+        public LoadMoreViewHolder(View itemView) {
+            super(itemView);
+
+            mTextView = (TextView) itemView.findViewById(R.id.load_more);
+            mLinearLayout = (LinearLayout) itemView.findViewById(R.id.ll_loadmore);
+        }
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
@@ -94,12 +109,26 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             viewHolder = new ImageViewHolder(imageContentView);
         }
 
+        if (viewType == ITEM_TYPE.VIEW_TYPE_LOAD_MORE.ordinal()) {
+            View loadMoreView = inflater.inflate(R.layout.load_more, parent, false);
+            viewHolder = new LoadMoreViewHolder(loadMoreView);
+        }
         return viewHolder;
     }
 
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+        if (position > mContents.size() - 1) {
+            LoadMoreViewHolder loadMoreViewHolder = (LoadMoreViewHolder) holder;
+            loadMoreViewHolder.mTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(mContext, "加载更多", Toast.LENGTH_SHORT).show();
+                }
+            });
+            return;
+        }
         Content content = mContents.get(position);
         Date date = content.publishedAt;
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
@@ -164,11 +193,14 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return mContents.size();
+        return mContents.size() + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (position > mContents.size() - 1) {
+            return ITEM_TYPE.VIEW_TYPE_LOAD_MORE.ordinal();
+        }
         Content content = mContents.get(position);
         List<String> images = content.images;
         return images.size() == 0 ? ITEM_TYPE.VIEW_TYPE_TEXT.ordinal() : ITEM_TYPE.VIEW_TYPE_IMAGE.ordinal();
