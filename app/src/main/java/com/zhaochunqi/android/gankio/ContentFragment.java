@@ -81,12 +81,6 @@ public class ContentFragment extends Fragment {
             }
         });
 
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
         GankServiceHelper gankServiceHelper = new GankServiceHelper(getActivity().getApplication());
         GankService gankService = gankServiceHelper.getGankService();
         gankService.getDatas(type, "10", "1").
@@ -111,7 +105,6 @@ public class ContentFragment extends Fragment {
                                }
                            }
                 );
-
         return view;
     }
 
