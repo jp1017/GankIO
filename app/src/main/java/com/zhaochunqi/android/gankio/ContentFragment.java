@@ -119,7 +119,6 @@ public class ContentFragment extends Fragment {
         GankServiceHelper gankServiceHelper = new GankServiceHelper(getActivity().getApplication());
         mGankService = gankServiceHelper.getGankService();
         mContentAdapter.clear();
-        getContents(1);
         return view;
     }
 
