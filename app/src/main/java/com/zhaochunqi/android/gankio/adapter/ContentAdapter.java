@@ -189,4 +189,14 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+
+    public void clear() {
+        mContents.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Content> list) {
+        mContents.addAll(list);
+        notifyDataSetChanged();
+    }
 }

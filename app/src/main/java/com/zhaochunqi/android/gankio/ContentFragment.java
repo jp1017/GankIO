@@ -2,8 +2,10 @@ package com.zhaochunqi.android.gankio;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -62,29 +64,63 @@ public class ContentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_content, container, false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_content);
 
+        SwipeRefreshLayout swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeContainer.setRefreshing(true);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), "Hello World!", Toast.LENGTH_SHORT).show();
+                        swipeContainer.setRefreshing(false);
+                    }
+                }, 2000);
+            }
+        });
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
 
         GankService gankService = GankServiceHelper.getGankService();
         gankService.getDatas(type, "10", "1")
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<Datas>() {
-                    @Override
-                    public void call(Datas datas) {
-                        if (!datas.error) {
-                            List<Content> contents = datas.mContents;
-                            ContentAdapter contentAdapter = new ContentAdapter(contents);
-                            recyclerView.setAdapter(contentAdapter);
-                            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                            recyclerView.setLayoutManager(layoutManager);
-                            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                                    layoutManager.getOrientation());
-                            recyclerView.addItemDecoration(dividerItemDecoration);
+                .
 
-                        } else {
-                            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                        observeOn(AndroidSchedulers.mainThread()
+
+                        )
+                .
+
+                        subscribeOn(Schedulers.io()
+
+                        )
+                .
+
+                        subscribe(new Action1<Datas>() {
+                                      @Override
+                                      public void call(Datas datas) {
+                                          if (!datas.error) {
+                                              List<Content> contents = datas.mContents;
+                                              ContentAdapter contentAdapter = new ContentAdapter(contents);
+                                              recyclerView.setAdapter(contentAdapter);
+                                              LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                                              recyclerView.setLayoutManager(layoutManager);
+                                              DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                                                      layoutManager.getOrientation());
+                                              recyclerView.addItemDecoration(dividerItemDecoration);
+
+                                          } else {
+                                              Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                          }
+                                      }
+                                  }
+
+                        );
 
         return view;
     }
