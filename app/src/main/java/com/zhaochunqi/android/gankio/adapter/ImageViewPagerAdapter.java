@@ -61,6 +61,8 @@ public class ImageViewPagerAdapter extends PagerAdapter {
         Uri uri = Uri.parse(mResources.get(position));
         Glide.with(mContext)
                 .load(uri)
+                .asBitmap()
+                .centerCrop()
                 .placeholder(R.drawable.sample1)
                 .into(imageView);
 
