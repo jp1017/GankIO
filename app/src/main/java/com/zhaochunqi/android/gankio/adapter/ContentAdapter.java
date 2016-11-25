@@ -23,8 +23,11 @@ import java.util.List;
 public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Content> mContents;
     private Context mContext;
-    private static final int VIEW_TYPE_IMAGE = 0;
-    private static final int VIEW_TYPE_TEXT = 1;
+
+    public static enum ITEM_TYPE {
+        VIEW_TYPE_IMAGE,
+        VIEW_TYPE_TEXT
+    }
 
     public ContentAdapter(List<Content> contents) {
         mContents = contents;
@@ -71,21 +74,16 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        RecyclerView.ViewHolder viewHolder;
+        RecyclerView.ViewHolder viewHolder = null;
 
-        switch (viewType) {
-            case VIEW_TYPE_TEXT:
-                View textContentView = inflater.inflate(R.layout.item_text, parent, false);
-                viewHolder = new TextViewHolder(textContentView);
-                break;
-            case VIEW_TYPE_IMAGE:
-                View imageContentView = inflater.inflate(R.layout.item_pager_image, parent, false);
-                viewHolder = new ImageViewHolder(imageContentView);
-                break;
-            default:
-                View view = inflater.inflate(R.layout.item_text, parent, false);
-                viewHolder = new TextViewHolder(view);
-                break;
+        if (viewType == ITEM_TYPE.VIEW_TYPE_TEXT.ordinal()) {
+            View textContentView = inflater.inflate(R.layout.item_text, parent, false);
+            viewHolder = new TextViewHolder(textContentView);
+        }
+
+        if (viewType == ITEM_TYPE.VIEW_TYPE_IMAGE.ordinal()) {
+            View imageContentView = inflater.inflate(R.layout.item_pager_image, parent, false);
+            viewHolder = new ImageViewHolder(imageContentView);
         }
 
         return viewHolder;
@@ -144,9 +142,6 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
         Content content = mContents.get(position);
         List<String> images = content.images;
-        if (images.size() == 0) {
-            return VIEW_TYPE_TEXT;
-        }
-        return VIEW_TYPE_IMAGE;
+        return images.size() == 0 ? ITEM_TYPE.VIEW_TYPE_TEXT.ordinal() : ITEM_TYPE.VIEW_TYPE_IMAGE.ordinal();
     }
 }
