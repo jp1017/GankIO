@@ -6,9 +6,10 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.bumptech.glide.Glide;
 import com.zhaochunqi.android.gankio.R;
 
 import java.util.ArrayList;
@@ -55,10 +56,13 @@ public class ImageViewPagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View itemView = mLayoutInflater.inflate(R.layout.pager_image, container, false);
 
-        SimpleDraweeView imageView = (SimpleDraweeView) itemView.findViewById(R.id.image_display);
+        ImageView imageView = (ImageView) itemView.findViewById(R.id.image_display);
 
         Uri uri = Uri.parse(mResources.get(position));
-        imageView.setImageURI(uri);
+        Glide.with(mContext)
+                .load(uri)
+                .placeholder(R.drawable.sample1)
+                .into(imageView);
 
         container.addView(itemView);
 

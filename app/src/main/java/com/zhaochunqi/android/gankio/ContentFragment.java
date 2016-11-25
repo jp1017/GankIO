@@ -63,6 +63,7 @@ public class ContentFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_content, container, false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_content);
+        recyclerView.setNestedScrollingEnabled(false);
 
         SwipeRefreshLayout swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -86,41 +87,30 @@ public class ContentFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        GankServiceHelper gankServiceHelper = new GankServiceHelper(getActivity().getApplication());
+        GankService gankService = gankServiceHelper.getGankService();
+        gankService.getDatas(type, "10", "1").
+                observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<Datas>() {
+                               @Override
+                               public void call(Datas datas) {
+                                   if (!datas.error) {
+                                       List<Content> contents = datas.mContents;
+                                       ContentAdapter contentAdapter = new ContentAdapter(contents);
+                                       recyclerView.setAdapter(contentAdapter);
+                                       LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                                       recyclerView.setLayoutManager(layoutManager);
+                                       DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                                               layoutManager.getOrientation());
+                                       recyclerView.addItemDecoration(dividerItemDecoration);
 
-        GankService gankService = GankServiceHelper.getGankService();
-        gankService.getDatas(type, "10", "1")
-                .
-
-                        observeOn(AndroidSchedulers.mainThread()
-
-                        )
-                .
-
-                        subscribeOn(Schedulers.io()
-
-                        )
-                .
-
-                        subscribe(new Action1<Datas>() {
-                                      @Override
-                                      public void call(Datas datas) {
-                                          if (!datas.error) {
-                                              List<Content> contents = datas.mContents;
-                                              ContentAdapter contentAdapter = new ContentAdapter(contents);
-                                              recyclerView.setAdapter(contentAdapter);
-                                              LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                                              recyclerView.setLayoutManager(layoutManager);
-                                              DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                                                      layoutManager.getOrientation());
-                                              recyclerView.addItemDecoration(dividerItemDecoration);
-
-                                          } else {
-                                              Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                                          }
-                                      }
-                                  }
-
-                        );
+                                   } else {
+                                       Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                   }
+                               }
+                           }
+                );
 
         return view;
     }
