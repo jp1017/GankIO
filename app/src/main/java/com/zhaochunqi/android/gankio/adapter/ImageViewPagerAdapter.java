@@ -6,7 +6,6 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -22,12 +21,19 @@ public class ImageViewPagerAdapter extends PagerAdapter {
     private List<String> mResources = new ArrayList();
     private Context mContext;
     private LayoutInflater mLayoutInflater;
-    private ImageView[] mIndicators;
+    private Listener mListener;
 
     public ImageViewPagerAdapter(Context context) {
         mContext = context;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
+    public static interface Listener {
+        public void onClick();
+    }
+
+    public void setListener(Listener listener) {
+        mListener = listener;
     }
 
     public void setResources(List<String> resources) {
@@ -54,6 +60,12 @@ public class ImageViewPagerAdapter extends PagerAdapter {
         imageView.setImageURI(uri);
 
         container.addView(itemView);
+
+        itemView.setOnClickListener(listener -> {
+            if (mListener != null) {
+                mListener.onClick();
+            }
+        });
 
         return itemView;
     }

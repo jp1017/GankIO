@@ -111,10 +111,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tvPubDate.setText(content.publishedAt);
 
             textViewHolder.mRelativeLayout.setOnClickListener((listener) -> {
-                Intent intent = new Intent(mContext, WebViewActivity.class);
-                intent.putExtra(WebViewActivity.TITLE, content.desc);
-                intent.putExtra(WebViewActivity.URL, content.url);
-                mContext.startActivity(intent);
+                startWebViewActivity(content);
             });
         }
 
@@ -133,7 +130,9 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             ImageViewPagerAdapter pagerAdapter = new ImageViewPagerAdapter(mContext);
             pagerAdapter.setResources(content.images);
+            pagerAdapter.setListener(() -> startWebViewActivity(content));
 
+            linearLayout.removeAllViews();
             ImageView[] mIndicators = new ImageView[content.images.size()];
             for (int i = 0; i < mIndicators.length; i++) {
                 mIndicators[i] = new ImageView(mContext);
@@ -145,16 +144,15 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
 
             setIndicator(0, mIndicators);
-
             vpImage.setAdapter(pagerAdapter);
-
-            frameLayout.setOnClickListener((listener) -> {
-                Intent intent = new Intent(mContext, WebViewActivity.class);
-                intent.putExtra(WebViewActivity.TITLE, content.desc);
-                intent.putExtra(WebViewActivity.URL, content.url);
-                mContext.startActivity(intent);
-            });
         }
+    }
+
+    private void startWebViewActivity(Content content) {
+        Intent intent = new Intent(mContext, WebViewActivity.class);
+        intent.putExtra(WebViewActivity.TITLE, content.desc);
+        intent.putExtra(WebViewActivity.URL, content.url);
+        mContext.startActivity(intent);
     }
 
     @Override
