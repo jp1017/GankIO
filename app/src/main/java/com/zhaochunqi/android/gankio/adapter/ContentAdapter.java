@@ -18,6 +18,8 @@ import com.zhaochunqi.android.gankio.R;
 import com.zhaochunqi.android.gankio.WebViewActivity;
 import com.zhaochunqi.android.gankio.beans.Content;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -99,6 +101,10 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         Content content = mContents.get(position);
+        Date date = content.publishedAt;
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = format1.format(date);
+        Logger.d(dateString);
 
         if (holder instanceof TextViewHolder) {
             TextViewHolder textViewHolder = ((TextViewHolder) holder);
@@ -108,7 +114,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             tvTitle.setText(content.desc);
             tvAuthor.setText(content.who);
-            tvPubDate.setText(content.publishedAt);
+            tvPubDate.setText(dateString);
 
             textViewHolder.mRelativeLayout.setOnClickListener((listener) -> {
                 startWebViewActivity(content);
@@ -126,7 +132,7 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             tvTitle.setText(content.desc);
             tvAuthor.setText(content.who);
-            tvPubDate.setText(content.publishedAt);
+            tvPubDate.setText(dateString);
 
             ImageViewPagerAdapter pagerAdapter = new ImageViewPagerAdapter(mContext);
             pagerAdapter.setResources(content.images);

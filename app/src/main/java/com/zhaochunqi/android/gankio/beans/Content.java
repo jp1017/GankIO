@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,13 +17,13 @@ public class Content {
     public String id;
     @SerializedName("createdAt")
     @Expose
-    public String createdAt;
+    public Date createdAt;
     @SerializedName("desc")
     @Expose
     public String desc;
     @SerializedName("publishedAt")
     @Expose
-    public String publishedAt;
+    public Date publishedAt;
     @SerializedName("source")
     @Expose
     public String source;
