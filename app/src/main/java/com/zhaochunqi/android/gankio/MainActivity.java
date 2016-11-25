@@ -7,6 +7,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import com.zhaochunqi.android.gankio.adapter.ContentFragmentPagerAdapter;
+
 public class MainActivity extends BaseActivity {
 
     @Override
