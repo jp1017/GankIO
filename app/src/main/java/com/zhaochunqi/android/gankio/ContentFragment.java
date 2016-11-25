@@ -90,6 +90,7 @@ public class ContentFragment extends Fragment {
             }
         });
 
+
         mRecyclerView.setAdapter(mContentAdapter);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -123,6 +124,12 @@ public class ContentFragment extends Fragment {
     }
 
     private void getContents(int page) {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(mContext, "无网络连接..", Toast.LENGTH_SHORT).show();
+            mSwipeContainer.setRefreshing(false);
+            return;
+        }
+
         mGankService.getDatas(type, "10", String.valueOf(page))
                 .compose(RxUtil.normalSchedulers())
                 .subscribe(new Action1<Datas>() {
