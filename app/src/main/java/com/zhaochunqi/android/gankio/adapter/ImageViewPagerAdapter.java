@@ -61,7 +61,7 @@ public class ImageViewPagerAdapter extends PagerAdapter {
 
         container.addView(itemView);
 
-        itemView.setOnClickListener(listener -> {
+        itemView.setOnClickListener((listener) -> {
             if (mListener != null) {
                 mListener.onClick();
             }
