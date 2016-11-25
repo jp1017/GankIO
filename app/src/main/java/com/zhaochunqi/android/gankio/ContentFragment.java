@@ -106,6 +106,16 @@ public class ContentFragment extends Fragment {
             }
         });
 
+        EndlessRecyclerViewScrollListener listener = new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+//                loadMore();
+                getContents(page);
+            }
+        };
+
+        mRecyclerView.addOnScrollListener(listener);
+
         GankServiceHelper gankServiceHelper = new GankServiceHelper(getActivity().getApplication());
         mGankService = gankServiceHelper.getGankService();
         mContentAdapter.clear();
