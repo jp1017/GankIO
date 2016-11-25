@@ -104,7 +104,6 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Date date = content.publishedAt;
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = format1.format(date);
-        Logger.d(dateString);
 
         if (holder instanceof TextViewHolder) {
             TextViewHolder textViewHolder = ((TextViewHolder) holder);
@@ -135,22 +134,24 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tvPubDate.setText(dateString);
 
             ImageViewPagerAdapter pagerAdapter = new ImageViewPagerAdapter(mContext);
-            pagerAdapter.setResources(content.images);
+            List<String> images = content.images;
+            pagerAdapter.setResources(images);
             pagerAdapter.setListener(() -> startWebViewActivity(content));
+            vpImage.setAdapter(pagerAdapter);
 
             linearLayout.removeAllViews();
-            ImageView[] mIndicators = new ImageView[content.images.size()];
-            for (int i = 0; i < mIndicators.length; i++) {
-                mIndicators[i] = new ImageView(mContext);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.setMargins(10, 0, 10, 0);
-                mIndicators[i].setLayoutParams(lp);
-                linearLayout.addView(mIndicators[i]);
+            if (images.size() > 1) {
+                ImageView[] mIndicators = new ImageView[images.size()];
+                for (int i = 0; i < mIndicators.length; i++) {
+                    mIndicators[i] = new ImageView(mContext);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(10, 0, 10, 0);
+                    mIndicators[i].setLayoutParams(lp);
+                    linearLayout.addView(mIndicators[i]);
+                }
+                setIndicator(0, mIndicators);
             }
-
-            setIndicator(0, mIndicators);
-            vpImage.setAdapter(pagerAdapter);
         }
     }
 

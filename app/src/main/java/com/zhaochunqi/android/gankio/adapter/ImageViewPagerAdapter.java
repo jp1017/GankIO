@@ -28,6 +28,7 @@ public class ImageViewPagerAdapter extends PagerAdapter {
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    @FunctionalInterface
     public static interface Listener {
         public void onClick();
     }
@@ -61,9 +62,12 @@ public class ImageViewPagerAdapter extends PagerAdapter {
 
         container.addView(itemView);
 
-        itemView.setOnClickListener((listener) -> {
-            if (mListener != null) {
-                mListener.onClick();
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mListener != null) {
+                    mListener.onClick();
+                }
             }
         });
 
