@@ -1,6 +1,9 @@
 package com.zhaochunqi.android.gankio;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -19,12 +22,13 @@ import com.zhaochunqi.android.gankio.beans.Content;
 import com.zhaochunqi.android.gankio.beans.Datas;
 import com.zhaochunqi.android.gankio.network.GankService;
 import com.zhaochunqi.android.gankio.network.GankServiceHelper;
+import com.zhaochunqi.android.gankio.network.ResponseCodeError;
+import com.zhaochunqi.android.gankio.network.WebFailureAction;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 
 /**
@@ -33,6 +37,12 @@ import rx.schedulers.Schedulers;
 public class ContentFragment extends Fragment {
     private String type;
     public static final String ARG_TYPE = "ARG_TYPE";
+    private GankService mGankService;
+    private Context mContext;
+    private ContentAdapter mContentAdapter;
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeContainer;
+    private int mPage = 1;
 
 
     public ContentFragment() {
@@ -53,6 +63,7 @@ public class ContentFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getContext();
 
         type = getArguments().getString(ARG_TYPE);
     }
@@ -62,50 +73,82 @@ public class ContentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_content, container, false);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_content);
-        recyclerView.setNestedScrollingEnabled(false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_content);
+        mRecyclerView.setNestedScrollingEnabled(false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(layoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
+                layoutManager.getOrientation());
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        SwipeRefreshLayout swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        mContentAdapter = new ContentAdapter(new ArrayList<Content>());
+        mContentAdapter.setListener(new ContentAdapter.Listener() {
+            @Override
+            public void onClick() {
+                loadMore();
+            }
+        });
+
+        mRecyclerView.setAdapter(mContentAdapter);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeContainer.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getContext(), "Hello World!", Toast.LENGTH_SHORT).show();
-                        swipeContainer.setRefreshing(false);
+                        refreshData();
                     }
                 }, 2000);
             }
         });
 
         GankServiceHelper gankServiceHelper = new GankServiceHelper(getActivity().getApplication());
-        GankService gankService = gankServiceHelper.getGankService();
-        gankService.getDatas(type, "10", "1").
-                observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<Datas>() {
-                               @Override
-                               public void call(Datas datas) {
-                                   if (!datas.error) {
-                                       List<Content> contents = datas.mContents;
-                                       ContentAdapter contentAdapter = new ContentAdapter(contents);
-                                       recyclerView.setAdapter(contentAdapter);
-                                       LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                                       recyclerView.setLayoutManager(layoutManager);
-                                       DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                                               layoutManager.getOrientation());
-                                       recyclerView.addItemDecoration(dividerItemDecoration);
-
-                                   } else {
-                                       Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                                   }
-                               }
-                           }
-                );
+        mGankService = gankServiceHelper.getGankService();
+        mContentAdapter.clear();
+        getContents(1);
         return view;
     }
 
+    private void refreshData() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(mContext, "无网络连接..", Toast.LENGTH_SHORT).show();
+            mSwipeContainer.setRefreshing(false);
+            return;
+        }
+        mContentAdapter.clear();
+        getContents(1);
+    }
+
+    private void getContents(int page) {
+        mGankService.getDatas(type, "10", String.valueOf(page))
+                .compose(RxUtil.normalSchedulers())
+                .subscribe(new Action1<Datas>() {
+                               @Override
+                               public void call(Datas datas) {
+                                   if (datas.error) {
+                                       throw new ResponseCodeError("error response");
+                                   }
+                                   List<Content> contents = datas.mContents;
+                                   mContentAdapter.addAll(contents);
+                                   mContentAdapter.notifyDataSetChanged();
+
+                                   mSwipeContainer.setRefreshing(false);
+                               }
+                           }
+                        , new WebFailureAction());
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void loadMore() {
+        getContents(++mPage);
+    }
 }

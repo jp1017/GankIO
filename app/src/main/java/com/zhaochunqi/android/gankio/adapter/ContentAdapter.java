@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.zhaochunqi.android.gankio.R;
@@ -30,6 +29,7 @@ import java.util.List;
 public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Content> mContents;
     private Context mContext;
+    private ContentAdapter.Listener mListener;
 
     public static enum ITEM_TYPE {
         VIEW_TYPE_IMAGE,
@@ -39,6 +39,14 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public ContentAdapter(List<Content> contents) {
         mContents = contents;
+    }
+
+    public static interface Listener {
+        void onClick();
+    }
+
+    public void setListener(Listener listener) {
+        mListener = listener;
     }
 
     static class TextViewHolder extends RecyclerView.ViewHolder {
@@ -124,7 +132,9 @@ public class ContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             loadMoreViewHolder.mTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext, "加载更多", Toast.LENGTH_SHORT).show();
+                    if (mListener != null) {
+                        mListener.onClick();
+                    }
                 }
             });
             return;
