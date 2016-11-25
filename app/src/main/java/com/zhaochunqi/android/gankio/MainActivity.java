@@ -12,7 +12,7 @@ import com.zhaochunqi.android.gankio.adapter.ContentFragmentPagerAdapter;
 public class MainActivity extends BaseActivity {
 
     private ContentFragmentPagerAdapter mPagerAdapter;
-    public static final String CURRENT_POSITION = "currentPositon";
+    public static final String CURRENT_POSITION = "currentPosition";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        int position = mPagerAdapter.getPostion();
+        int position = mPagerAdapter.getPosition();
         outState.putInt(CURRENT_POSITION, position);
     }
 }
