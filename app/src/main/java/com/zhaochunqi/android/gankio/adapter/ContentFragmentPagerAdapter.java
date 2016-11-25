@@ -14,6 +14,7 @@ public class ContentFragmentPagerAdapter extends FragmentPagerAdapter {
 
     final int PAGE_COUNT = 3;
     private String tabTitles[] = new String[]{"Android", "iOS", "前端"};
+    private int postion;
 
     public ContentFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -21,6 +22,7 @@ public class ContentFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        this.postion = position;
         return ContentFragment.newInstance(tabTitles[position]);
     }
 
@@ -34,4 +36,11 @@ public class ContentFragmentPagerAdapter extends FragmentPagerAdapter {
         return tabTitles[position];
     }
 
+    public int getPostion() {
+        return postion;
+    }
+
+    public void setPostion(int postion) {
+        this.postion = postion;
+    }
 }
